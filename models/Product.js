@@ -1,3 +1,4 @@
+//Import sequelize library and database connection object.
 const { Model, DataTypes } = require('sequelize');
 
 const sequelize = require('../config/connection');
@@ -48,4 +49,6 @@ Product.init(
       modelName: 'product',
     }
   );
+
+  module.exports = Product;
   
