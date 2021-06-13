@@ -1,15 +1,7 @@
 const { Tag } = require('../models');
 
 const tagValues = [
-  {
-    tag_name: 'rock music',
-  },
-  {
-    tag_name: 'pop music',
-  },
-  {
-    tag_name: 'blue',
-  },
+
   {
     tag_name: 'red',
   },
@@ -18,6 +10,15 @@ const tagValues = [
   },
   {
     tag_name: 'white',
+  },
+  {
+    tag_name: 'rock music',
+  },
+  {
+    tag_name: 'pop music',
+  },
+  {
+    tag_name: 'blue',
   },
   {
     tag_name: 'gold',
