@@ -8,13 +8,13 @@ const categoryValues = [
       category_name: 'Womens Clothing',
     },
     {
-      category_name: 'Gadgets',
+      category_name: 'Sports',
     },
     {
       category_name: 'Home Living',
     },
     {
-      category_name: 'Books',
+      category_name: 'Car Accessories',
     },
   ];
 
