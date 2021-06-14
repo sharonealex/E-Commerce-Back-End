@@ -33,21 +33,7 @@ router.get('/', (request, response) => {
     });
 
 //fetch category by id and the products within them.
-router.get('/', (request, response) => {
-    Category.findAll(
-        {
-          include: {
-            model: Product,
-            attributes: ['product_name']
-          }
-        }
-      )
-        .then(categoryData => response.json(categoryData))
-        .catch(err => {
-          console.log(err);
-          res.status(500).json(err);
-        });
-    });
+
     
     router.get('/:id', (request, response) => {
         Category.findOne({
@@ -66,7 +52,7 @@ router.get('/', (request, response) => {
           });
       });
 
-      // PUT update a category
+//  update an existing category
 router.put('/:id', (request, response) => {
     Category.update(
       {
@@ -80,7 +66,7 @@ router.put('/:id', (request, response) => {
       .then(categoryData => {
           console.log(categoryData)
         if (!categoryData) {
-            response.status(404).json({ message: 'No Category found with that ID.' });
+            response.status(404).json({ message: 'No Category available with provided ID.' });
           return;
         }
         response.json(categoryData);
@@ -91,6 +77,7 @@ router.put('/:id', (request, response) => {
       });
   });
 
+  //Delete a category and associated products that belong to this category.
   router.delete('/:id', (request, response) => {
     Category.destroy({
       where: {
@@ -102,7 +89,7 @@ router.put('/:id', (request, response) => {
     })
       .then(categoryData => {
         if (!categoryData) {
-            response.status(404).json({ message: 'No Category found with that ID.' });
+            response.status(404).json({ message: 'No Category  available with provided ID.' });
           return;
         }
         response.json(categoryData);
