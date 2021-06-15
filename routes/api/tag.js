@@ -75,4 +75,28 @@ router.get("/:id", (req, res) => {
   });
   
 
+  //DELETE
+
+  router.delete("/:id", (req, res) => {
+   
+    Tag.destroy({
+      where: {
+        id: req.params.id,
+      },
+    })
+      .then((tag) => {
+        if (!tag) {
+          res.status(404).json({ message: "No Tag found with that ID." });
+          return;
+        }
+  
+        res.json(tag);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+    });
+      
+
 module.exports = router;
