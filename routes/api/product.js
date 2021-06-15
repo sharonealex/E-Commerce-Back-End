@@ -118,35 +118,26 @@ router.put("/:id", (req, res) => {
 
 
   //Delete a category and associated products that belong to this category.
-  router.delete('/:id', (request, response) => {
+  router.delete("/:id", (req, res) => {
+    // delete one product by its `id` value
     Product.destroy({
       where: {
-        id: request.params.id
+        id: req.params.id,
       },
-      include: [
-        {
-          model: Category,
-          attributes: ["category_name"],
-        },
-        {
-          model: Tag,
-          attributes: ["tag_name"],
-        },
-      ],
     })
-      .then(productData => {
-        if (!productData) {
-            response.status(404).json({ message: 'No Category  available with provided ID.' });
+      .then((product) => {
+        if (!product) {
+          res.status(404).json({ message: "No product found with this ID" });
           return;
         }
-        response.json(productData);
+  
+        res.json(product);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-        response.status(500).json(err);
+        res.status(500).json(err);
       });
   });
-  
           
     
 
