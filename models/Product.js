@@ -20,8 +20,7 @@ Product.init(
       },
       price: {
         type: DataTypes.DECIMAL,
-        allowNull: true,
-        defaultValue: 10.0,
+        allowNull: false,
         validate: {
           isDecimal: true
         }

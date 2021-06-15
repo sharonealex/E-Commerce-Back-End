@@ -1,12 +1,25 @@
 const router = require('express').Router();
-const { Category, Product } = require('../../models');
+const { Category, Product, Tag, ProductTag } = require('../../models');
 
 // api endpoints for products
 
 // create a new product
 router.post('/', (request, response) => {
-    Product.create({
-      product_name: request.body.product_name
+    Product.create(
+     request.body
+    )
+    .then((product) => {
+      // create mappings to bulk create in the ProductTag model, if there's product tags exists
+      if (request.body.tagIds.length) {
+        const productTagList = request.body.tagIds.map((tag_id) => {
+          return {
+            product_id: product.id,
+            tag_id,
+          };
+        });
+        return ProductTag.bulkCreate(productTagList);
+      }
+      res.status(200).json(product);
     })
       .then(productData => response.json(productData))
       .catch(err => {
@@ -17,7 +30,20 @@ router.post('/', (request, response) => {
 
 //fetch all products 
 router.get('/', (request, response) => {
-    Product.findAll()
+    Product.findAll({
+        include: [
+            {
+              model: Category,
+              attributes: ["category_name"],
+            },
+            {
+              model: Tag,
+              attributes: ["tag_name"],
+            },
+          ],
+    }
+        
+    )
         .then(productData => response.json(productData))
         .catch(err => {
           console.log(err);
@@ -27,50 +53,86 @@ router.get('/', (request, response) => {
 
 //fetch product by id and the products within them.
     
-    router.get('/:id', (request, response) => {
-        Product.findOne({
+    router.get('/:id', (request, response) => 
+    {
+        Product.findOne(
+            {
           where: {
             id: request.params.id
-          }
+          },
+          
+            include: [
+                {
+                  model: Category,
+                  attributes: ["category_name"],
+                },
+                {
+                  model: Tag,
+                  attributes: ["tag_name"],
+                },
+              ]
+        
         })
           .then(productData => response.json(productData))
           .catch(err => {
             console.log(err);
             response.status(500).json(err);
           });
-      });
+        });
+      
+    
 
 //  update an existing product
-router.put('/:id', (request, response) => {
-    Product.update(
-      {
-        category_name: request.body.product_name
-      },
-      {
-        where: {
-          id: request.params.id
-        }
-      })
-      .then(productData => {
-          console.log(productData)
-        if (!productData) {
-            response.status(404).json({ message: 'No Product available with provided ID.' });
-          return;
-        }
-        response.json(productData);
-      })
-      .catch(err => {
-        console.log(err);
-        response.status(500).json(err);
-      });
-  });
+router.put("/:id", (req, res) => {
+  Product.update(req.body, {
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((product) => {
+      return ProductTag.findAll({ where: { product_id: req.params.id } });
+    })
+    .then((productTags) => {
+      const productTagIds = productTags.map(({ tag_id }) => tag_id);
+      const newProductTags = req.body.tagIds
+        .filter((tag_id) => !productTagIds.includes(tag_id))
+        .map((tag_id) => {
+          return {
+            product_id: req.params.id,
+            tag_id,
+          };
+        });
+      const productTagsToRemove = productTags
+        .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
+        .map(({ id }) => id);
+      return Promise.all([
+        ProductTag.destroy({ where: { id: productTagsToRemove } }),
+        ProductTag.bulkCreate(newProductTags),
+      ]);
+    })
+    .then((updatedProductTags) => res.json(updatedProductTags))
+    .catch((err) => {
+      res.status(400).json(err);
+    });
+});
+
 
   //Delete a category and associated products that belong to this category.
   router.delete('/:id', (request, response) => {
     Product.destroy({
       where: {
         id: request.params.id
-      }
+      },
+      include: [
+        {
+          model: Category,
+          attributes: ["category_name"],
+        },
+        {
+          model: Tag,
+          attributes: ["tag_name"],
+        },
+      ],
     })
       .then(productData => {
         if (!productData) {
