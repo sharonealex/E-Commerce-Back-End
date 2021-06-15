@@ -13,7 +13,8 @@ https://drive.google.com/file/d/1wdjf7cTxp2MdsHAflbv3nk-v-aKyBBPg/view
 
 The screenshots and videos below show this application previews:
 
-![Insomnia Preview](./assets/images/insomnia.PNG)
+![Insomnia Preview](assets/insomnia.PNG)
+
 
 
 ### _Installation_
